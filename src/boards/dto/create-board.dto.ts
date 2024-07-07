@@ -7,6 +7,4 @@ export class CreateBoardDto {
   @IsNotEmpty()
   detail:string;
 
-  @IsNotEmpty()
-  author:string;
 }

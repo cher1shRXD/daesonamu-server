@@ -1,34 +1,49 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { Board } from './board.model';
+
+import { Board } from './board.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
+import { InsertResult } from 'typeorm';
 
 @Controller('boards')
 export class BoardsController {
-  constructor(private boradService: BoardsService) {}
-  
+  constructor(private boardsService: BoardsService) {}
+
   @Get()
-  getAllBoards() : Board[] {
-    return this.boradService.getAllBoards();
+  getAllBoards(): Promise<Board[]> {
+    return this.boardsService.getAllBoards();
   }
+
   @Get('/:id')
-  getBoardById(@Param('id') boardId:string) : Board {
-    return this.boradService.getBoardById(boardId);
+  getBoardById(@Param('id') boardId: number): Promise<Board> {
+    return this.boardsService.getBoardById(boardId);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createBoards(@Body() createBoardDto : CreateBoardDto) : Board {
-    return this.boradService.createBoard(createBoardDto);
+  @UseGuards(AuthGuard())
+  createBoards(
+    @Body() createBoardDto: CreateBoardDto,
+    @GetUser() user:User
+  ): Promise<Board> {
+    return this.boardsService.createBoard(createBoardDto, user);
   }
 
   @Delete('/:id')
-  deleteBoard(@Param('id') boardId:string) : void {
-    this.boradService.deleteBoard(boardId);
+  @UseGuards(AuthGuard())
+  deleteBoard(@Param('id') boardId: number): void {
+    this.boardsService.deleteBoard(boardId);
   }
 
   @Patch('/:id/edit')
-  updateBoard(@Param('id') boardId:string, @Body('detail') detail:string) : Board {
-    return this.boradService.updateBoard(boardId,detail);
+  @UseGuards(AuthGuard())
+  updateBoard(
+    @Param('id') boardId: number,
+    @Body('detail') detail: string,
+  ): Promise<Board> {
+    return this.boardsService.updateBoard(boardId, detail);
   }
 }
