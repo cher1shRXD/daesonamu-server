@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { Board } from './board.model';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v1 as uuid } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { Board } from './board.model';
 
 @Injectable()
 export class BoardsService {
-  private boards : Board[] = [
-    
-  ];
+  private boards : Board[] = [];
+ 
   getAllBoards() : Board[] {
     return this.boards;
   }
+  
   createBoard(createBoardDto : CreateBoardDto) {
     const { title,detail,author } = createBoardDto
     const createdAt = new Date().toLocaleDateString();
@@ -24,11 +24,18 @@ export class BoardsService {
     this.boards.push(newContent);
     return newContent;
   }
+  
   getBoardById(boardId:string) : Board {
-    return this.boards.find((item)=>item.id === boardId);
+    const res = this.boards.find((item) => item.id === boardId);
+    if(!res) {
+      throw new NotFoundException(`There's no content has ${boardId} for its id`);
+    }
+    return res
   }
+  
   deleteBoard(boardId:string) : void {
-    this.boards = this.boards.filter((item) => item.id !== boardId);
+    const target = this.getBoardById(boardId);
+    this.boards = this.boards.filter((item) => item.id !== target.id);
   }
 
   updateBoard(boardId:string, newDetail:string) : Board {
