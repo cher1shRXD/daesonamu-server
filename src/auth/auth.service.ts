@@ -15,9 +15,9 @@ import * as config from 'config';
 
 interface JwtConfig {
   secret: string;
-  expiration: number | string;
+  expiration: number;
   refreshSecret: string;
-  refreshExpiration: number | string;
+  refreshExpiration: number;
 }
 
 const jwtConfig: JwtConfig = config.get('jwt');
