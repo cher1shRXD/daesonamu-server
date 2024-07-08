@@ -11,5 +11,5 @@ db:
 jwt:
   expiration: 3600
   secret: 'serverofdaesonamu'
-  refreshSecret: "serverofdaesonamu"
+  refreshSecret: "refreshdaesonamu"
   refreshExpiration: 2592000

@@ -1,12 +1,16 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupCredentialDto } from './dto/signup.dto';
 import { LoginCredentialDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './get-user.decorator';
 import { User } from './user.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Controller('auth')
+@ApiTags('AUTH')
+@ApiBearerAuth('access-token')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -20,18 +24,18 @@ export class AuthController {
   @Post('/login')
   login(
     @Body(ValidationPipe) loginCredentialDto: LoginCredentialDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string, refreshToken:string }> {
     return this.authService.login(loginCredentialDto);
   }
 
-  @Post('/me')
+  @Get('/me')
   @UseGuards(AuthGuard('jwt'))
-  me(@GetUser() user: User) {
-    console.log(user);
+  me(@GetUser() user: User) : User {
+    return user;
   }
 
   @Post('/refresh')
-  async refresh(@Body('refreshToken') refreshToken: string) {
+  async refresh(@Body() refreshToken: RefreshTokenDto) {
     return this.authService.refreshAccessToken(refreshToken);
   }
 }

@@ -12,6 +12,7 @@ import { LoginCredentialDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import Redis from 'ioredis';
 import * as config from 'config';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 interface JwtConfig {
   secret: string;
@@ -40,7 +41,7 @@ export class AuthService {
       payload.studentId,
       refreshToken,
       'EX',
-      parseInt(jwtConfig.refreshExpiration.toString()) / 1000,
+      jwtConfig.refreshExpiration,
     );
     return refreshToken;
   }
@@ -64,35 +65,29 @@ export class AuthService {
     }
 
     const payload = { studentId };
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: jwtConfig.expiration.toString(),
-      secret: jwtConfig.secret,
-    });
+    const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.createRefreshToken(payload);
 
     return { accessToken, refreshToken };
   }
 
   async refreshAccessToken(
-    refreshToken: string,
+    refreshToken:RefreshTokenDto,
   ): Promise<{ accessToken: string, refreshToken: string }> {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
+      const payload = this.jwtService.verify(refreshToken.refreshToken, {
         secret: jwtConfig.refreshSecret,
       }) as { studentId: string };
       const { studentId } = payload;
 
       const storedToken = await this.redisClient.get(studentId);
 
-      if (!storedToken || storedToken !== refreshToken) {
+      if (!storedToken || storedToken !== refreshToken.refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
       const newPayload = { studentId };
-      const accessToken = this.jwtService.sign(newPayload, {
-        expiresIn: jwtConfig.expiration.toString(),
-        secret: jwtConfig.secret,
-      });
+      const accessToken = this.jwtService.sign(newPayload);
       const newRefreshToken = this.createRefreshToken(newPayload)
 
       return { accessToken, refreshToken:newRefreshToken };
