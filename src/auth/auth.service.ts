@@ -1,39 +1,103 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { SignupCredentialDto } from './dto/signup.dto';
-import * as bycrpt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { LoginCredentialDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import Redis from 'ioredis';
+import * as config from 'config';
+
+interface JwtConfig {
+  secret: string;
+  expiration: number | string;
+  refreshSecret: string;
+  refreshExpiration: number | string;
+}
+
+const jwtConfig: JwtConfig = config.get('jwt');
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @Inject('REDIS_CLIENT') private readonly redisClient: Redis,
   ) {}
+
+  private createRefreshToken(payload: { studentId: string }): string {
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: jwtConfig.refreshExpiration.toString(),
+      secret: jwtConfig.refreshSecret,
+    });
+    this.redisClient.set(
+      payload.studentId,
+      refreshToken,
+      'EX',
+      parseInt(jwtConfig.refreshExpiration.toString()) / 1000,
+    );
+    return refreshToken;
+  }
 
   async signUp(signupCredentialDto: SignupCredentialDto): Promise<void> {
     return this.userRepository.createUser(signupCredentialDto);
   }
 
-  async login(loginCredentialDto: LoginCredentialDto): Promise<{accessToken:string}> {
+  async login(
+    loginCredentialDto: LoginCredentialDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const { studentId, password } = loginCredentialDto;
     const user = await this.userRepository.findOne({ where: { studentId } });
 
-    if (user) {
-      if (await bycrpt.compare(password, user.password)) {
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-        const payload = { studentId };
-        const accessToken = this.jwtService.sign(payload);
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new UnauthorizedException('Wrong password');
+    }
 
-        return { accessToken };
-      } else {
-        throw new UnauthorizedException('wrong password');
+    const payload = { studentId };
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: jwtConfig.expiration.toString(),
+      secret: jwtConfig.secret,
+    });
+    const refreshToken = this.createRefreshToken(payload);
+
+    return { accessToken, refreshToken };
+  }
+
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<{ accessToken: string, refreshToken: string }> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: jwtConfig.refreshSecret,
+      }) as { studentId: string };
+      const { studentId } = payload;
+
+      const storedToken = await this.redisClient.get(studentId);
+
+      if (!storedToken || storedToken !== refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
       }
-    } else {
-      throw new NotFoundException('user not found');
+
+      const newPayload = { studentId };
+      const accessToken = this.jwtService.sign(newPayload, {
+        expiresIn: jwtConfig.expiration.toString(),
+        secret: jwtConfig.secret,
+      });
+      const newRefreshToken = this.createRefreshToken(newPayload)
+
+      return { accessToken, refreshToken:newRefreshToken };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 }

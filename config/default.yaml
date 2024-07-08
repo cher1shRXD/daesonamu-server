@@ -1,0 +1,15 @@
+server:
+  port: 3000
+
+db:
+  type: 'mysql'
+  port: 3306
+  database: 'daesonamu'
+  username: 'root'
+  host: 'localhost'
+
+jwt:
+  expiration: 3600
+  secret: 'serverofdaesonamu'
+  refreshSecret: "serverofdaesonamu"
+  refreshExpiration: 2592000

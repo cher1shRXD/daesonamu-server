@@ -6,7 +6,6 @@ import { Board } from './board.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
-import { InsertResult } from 'typeorm';
 
 @Controller('boards')
 export class BoardsController {
@@ -27,15 +26,15 @@ export class BoardsController {
   @UseGuards(AuthGuard())
   createBoards(
     @Body() createBoardDto: CreateBoardDto,
-    @GetUser() user:User
+    @GetUser() user: User,
   ): Promise<Board> {
     return this.boardsService.createBoard(createBoardDto, user);
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard())
-  deleteBoard(@Param('id') boardId: number): void {
-    this.boardsService.deleteBoard(boardId);
+  deleteBoard(@Param('id') boardId: number, @GetUser() user: User): Promise<void> {
+    return this.boardsService.deleteBoard(boardId, user);
   }
 
   @Patch('/:id/edit')
