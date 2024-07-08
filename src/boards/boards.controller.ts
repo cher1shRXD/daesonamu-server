@@ -7,8 +7,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('boards')
+@ApiBearerAuth('access-token')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
@@ -24,7 +26,7 @@ export class BoardsController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   createBoards(
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
@@ -34,15 +36,18 @@ export class BoardsController {
 
   @Delete('/:id')
   @UseGuards(AuthGuard())
-  deleteBoard(@Param('id') boardId: number, @GetUser() user: User): Promise<void> {
+  deleteBoard(
+    @Param('id') boardId: number,
+    @GetUser() user: User,
+  ): Promise<void> {
     return this.boardsService.deleteBoard(boardId, user);
   }
 
   @Patch('/:id/edit')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   updateBoard(
     @Param('id') boardId: number,
-    @Body() updateBoardDto:UpdateBoardDto,
+    @Body() updateBoardDto: UpdateBoardDto,
   ): Promise<Board> {
     return this.boardsService.updateBoard(boardId, updateBoardDto);
   }
