@@ -18,7 +18,7 @@ async function bootstrap() {
       'Content-Type',
       'Authorization',
     ],
-    preflightContinue: true,
+    preflightContinue: false,
   });
   await app.listen(serverConfig.port, '0.0.0.0');
 }
