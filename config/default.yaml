@@ -7,7 +7,7 @@ db:
   database: 'daesonamu'
   username: 'root'
   host: 'localhost'
-  password: 'Tw080401!!**'
+  password: 'op1928!!'
   synchronize: true
 
 jwt:
