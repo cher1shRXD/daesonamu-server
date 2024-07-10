@@ -5,17 +5,28 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('upload')
 export class UploadController {
   @Post('file')
   @UseInterceptors(
-    FileInterceptor('file')
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: '/var/www/files',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file.path);
     return {
-      url:`http://file-daesonamu.kro.kr:8081/${file.filename}`
+      url: `http://file-daesonamu.kro.kr:8081/${file.filename}`,
     };
   }
 }
