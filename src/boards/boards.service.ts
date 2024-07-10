@@ -15,7 +15,10 @@ export class BoardsService {
 
   async getAllBoards(): Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author']
+      relations: ['author'],
+      order :{
+        id:'DESC'
+      }
     });
   }
 
