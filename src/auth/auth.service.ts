@@ -65,7 +65,7 @@ export class AuthService {
     }
 
     const payload = { studentId };
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiration });
     const refreshToken = this.createRefreshToken(payload);
 
     return { accessToken, refreshToken };

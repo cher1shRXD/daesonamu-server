@@ -11,7 +11,7 @@ db:
   synchronize: true
 
 jwt:
-  expiration: 1800
+  expiration: '3m'
   secret: 'serverofdaesonamu'
   refreshSecret: "refreshdaesonamu"
   refreshExpiration: 2592000
