@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { BoardsModule } from './boards/boards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { UploadModule } from './upload/upload.module';
 import * as config from 'config';
 
 
@@ -32,7 +31,6 @@ const dbConfig : DbConfig  = config.get('db');
       synchronize: dbConfig.synchronize, 
     }),
     AuthModule,
-    UploadModule,
   ],
 })
 export class AppModule {}
