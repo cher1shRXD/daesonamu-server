@@ -14,4 +14,4 @@ jwt:
   expiration: '3m'
   secret: 'serverofdaesonamu'
   refreshSecret: "refreshdaesonamu"
-  refreshExpiration: '2592000'
+  refreshExpiration: '5000000000'
