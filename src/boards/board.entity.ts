@@ -19,5 +19,5 @@ export class Board extends BaseEntity {
   createdAt:string;
 
   @Column()
-  category:"FREE" | "SHORTS"
+  category:"FREE" | "SHORTS";
 }

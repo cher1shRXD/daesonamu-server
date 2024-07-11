@@ -44,13 +44,14 @@ export class BoardsService {
   }
 
   async createBoard(createBoardDto: CreateBoardDto , user:User): Promise<Board> {
-    const { title, detail } = createBoardDto;
+    const { title, detail, category } = createBoardDto;
     const createdAt = new Date().toLocaleDateString();
     const newContent = this.boardRepository.create({
       title,
       detail,
       createdAt,
-      author: user
+      author: user,
+      category
     });
     return await this.boardRepository.save(newContent);
   }
