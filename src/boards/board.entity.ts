@@ -17,4 +17,7 @@ export class Board extends BaseEntity {
 
   @Column()
   createdAt:string;
+
+  @Column()
+  category:"FREE" | "SHORTS"
 }

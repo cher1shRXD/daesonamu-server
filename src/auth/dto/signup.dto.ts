@@ -9,7 +9,6 @@ export class SignupCredentialDto {
   studentId: string;
   @IsString()
   @MinLength(4)
-  @MaxLength(10)
   @ApiProperty({ type: String, description: 'username' })
   username: string;
   @IsString()

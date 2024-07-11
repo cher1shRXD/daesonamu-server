@@ -18,6 +18,16 @@ export class BoardsController {
     return this.boardsService.getAllBoards();
   }
 
+  @Get('/free')
+  getFreeBoards(): Promise<Board[]> {
+    return this.boardsService.getFreeBoards();
+  }
+
+  @Get('/shorts')
+  getShortsBoards(): Promise<Board[]> {
+    return this.boardsService.getShortsBoards();
+  }
+
   @Get('/:id')
   getBoardById(@Param('id') boardId: number): Promise<Board> {
     return this.boardsService.getBoardById(boardId);

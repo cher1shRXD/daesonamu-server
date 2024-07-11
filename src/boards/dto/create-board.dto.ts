@@ -11,4 +11,8 @@ export class CreateBoardDto {
   @ApiProperty({ type: String, description: 'detail' })
   @Column('longtext')
   detail: string;
+
+  @IsNotEmpty()
+  @ApiProperty({ type: String, description: 'category' })
+  category: "FREE" | "SHORTS"
 }

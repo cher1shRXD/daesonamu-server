@@ -21,6 +21,28 @@ export class BoardsService {
     });
   }
 
+  async getFreeBoards() : Promise<Board[]> {
+    return this.boardRepository.find({
+      relations: ['author'],
+      where: { category:"FREE" },
+      order: {
+        id:'DESC'
+      }
+    });
+  }
+
+  async getShortsBoards() : Promise<Board[]> {
+    return this.boardRepository.find({
+      relations: ['author'],
+      where: {
+        category:"SHORTS"
+      },
+      order: {
+        id: 'DESC'
+      }
+    })
+  }
+
   async createBoard(createBoardDto: CreateBoardDto , user:User): Promise<Board> {
     const { title, detail } = createBoardDto;
     const createdAt = new Date().toLocaleDateString();
