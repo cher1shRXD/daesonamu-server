@@ -6,7 +6,6 @@ import { Board } from './board.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
-import { UpdateBoardDto } from './dto/update-board.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('boards')
@@ -47,7 +46,7 @@ export class BoardsController {
   @UseGuards(AuthGuard('jwt'))
   updateBoard(
     @Param('id') boardId: number,
-    @Body() updateBoardDto: UpdateBoardDto,
+    @Body() updateBoardDto: CreateBoardDto,
   ): Promise<Board> {
     return this.boardsService.updateBoard(boardId, updateBoardDto);
   }
