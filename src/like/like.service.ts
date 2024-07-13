@@ -14,11 +14,11 @@ export class LikeService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  async likePost(postId: number, user: User): Promise<void> {
-    const board = await this.boardRepository.findOne({ where: { id: postId } });
+  async likePost(boardId: number, user: User): Promise<number> {
+    const board = await this.boardRepository.findOne({ where: { id: boardId } });
 
     if (!Board) {
-      throw new Error('Post not found');
+      throw new Error('board not found');
     }
 
     const like = new Like();
@@ -28,11 +28,12 @@ export class LikeService {
 
     board.likesCount += 1;
     await this.boardRepository.save(board);
+    return board.likesCount;
   }
 
-  async unlikePost(postId: number, user: User): Promise<void> {
+  async unlikePost(boardId: number, user: User): Promise<number> {
     const like = await this.likeRepository.findOne({
-      where: { board: { id: postId }, user: { id: user.id } },
+      where: { board: { id: boardId }, user: { id: user.id } },
     });
 
     if (!like) {
@@ -41,10 +42,11 @@ export class LikeService {
 
     await this.likeRepository.remove(like);
 
-    const post = await this.boardRepository.findOne({ where: { id: postId } });
-    if (post) {
-      post.likesCount -= 1;
-      await this.boardRepository.save(post);
+    const board = await this.boardRepository.findOne({ where: { id: boardId } });
+    if (board) {
+      board.likesCount -= 1;
+      await this.boardRepository.save(board);
     }
+    return board.likesCount;
   }
 }
