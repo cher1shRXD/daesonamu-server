@@ -9,7 +9,7 @@ import {
 import { LikeService } from './like.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('posts/:postId/likes')
+@Controller('likes/:postId')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
