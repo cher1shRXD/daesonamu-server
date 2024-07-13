@@ -1,23 +1,27 @@
 import { User } from "src/auth/user.entity";
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Like } from '../like/like.entity';
 
 @Entity()
 export class Board extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
 
   @Column()
-  title:string;
+  title: string;
 
-  @ManyToOne(type=> User, user => user.board, { eager:false } )
-  author:User;
+  @ManyToOne((type) => User, (user) => user.board, { eager: false })
+  author: User;
 
-  @Column()
-  detail:string;
-
-  @Column()
-  createdAt:string;
+  @Column('longtext')
+  detail: string;
 
   @Column()
-  category:"FREE" | "SHORTS";
+  createdAt: string;
+
+  @Column()
+  category: 'FREE' | 'SHORTS';
+
+  @OneToMany(() => Like, (like) => like.board)
+  likes: Like[];
 }
