@@ -24,4 +24,7 @@ export class Board extends BaseEntity {
 
   @OneToMany(() => Like, (like) => like.board)
   likes: Like[];
+
+  @Column({ default: 0 })
+  likesCount: number;
 }
