@@ -49,4 +49,18 @@ export class LikeService {
     }
     return board.likesCount;
   }
+
+  async checkLike(boardId:number, user: User): Promise<boolean> {
+    let likeStatus = false;
+    const res = await this.likeRepository.findOne(
+      {where:{
+        board:{ id: boardId },
+        user: { id: user.id }
+      }}
+    )
+    if(res) {
+      likeStatus = true;
+    }
+    return likeStatus;
+  }
 }
