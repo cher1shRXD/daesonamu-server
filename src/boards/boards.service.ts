@@ -14,7 +14,7 @@ export class BoardsService {
 
   async getAllBoards(): Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author'],
+      relations: ['author','likes'],
       order :{
         id:'DESC'
       }
@@ -23,7 +23,7 @@ export class BoardsService {
 
   async getFreeBoards() : Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author'],
+      relations: ['author','likes'],
       where: { category:"FREE" },
       order: {
         id:'DESC'
@@ -33,7 +33,7 @@ export class BoardsService {
 
   async getShortsBoards() : Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author'],
+      relations: ['author','likes'],
       where: {
         category:"SHORTS"
       },
@@ -51,7 +51,7 @@ export class BoardsService {
       detail,
       createdAt,
       author: user,
-      category
+      category,
     });
     return await this.boardRepository.save(newContent);
   }

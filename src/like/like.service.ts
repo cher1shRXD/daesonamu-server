@@ -14,18 +14,20 @@ export class LikeService {
     private postRepository: Repository<Board>,
   ) {}
 
-  async likePost(postId: number, user: User): Promise<void> {
+  async likePost(postId: number, user: User): Promise<Board> {
     const post = await this.postRepository.findOne({ where: { id: postId } });
     const like = new Like();
     like.board = post;
     like.user = user;
     await this.likeRepository.save(like);
+    return (await this.postRepository.findOne({where:{id:postId}}));
   }
 
-  async unlikePost(postId: number, user: User): Promise<void> {
+  async unlikePost(postId: number, user: User): Promise<Board> {
     const like = await this.likeRepository.findOne({
       where: { board: { id: postId }, user: { id: user.id } },
     });
     await this.likeRepository.remove(like);
+    return await this.postRepository.findOne({ where: { id: postId } });
   }
 }
