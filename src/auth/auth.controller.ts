@@ -15,14 +15,14 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/signup')
-  signUp(
+  async signUp(
     @Body(ValidationPipe) signupCredentialDto: SignupCredentialDto,
   ): Promise<void> {
     return this.authService.signUp(signupCredentialDto);
   }
 
   @Post('/login')
-  login(
+  async login(
     @Body(ValidationPipe) loginCredentialDto: LoginCredentialDto,
   ): Promise<{ accessToken: string, refreshToken:string }> {
     return this.authService.login(loginCredentialDto);
@@ -30,7 +30,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(AuthGuard('jwt'))
-  me(@GetUser() user: User) : User {
+  async me(@GetUser() user: User) : Promise<User> {
     return user;
   }
 

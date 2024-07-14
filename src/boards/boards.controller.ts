@@ -14,29 +14,29 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get()
-  getAllBoards(): Promise<Board[]> {
+  async getAllBoards(): Promise<Board[]> {
     return this.boardsService.getAllBoards();
   }
 
   @Get('/free')
-  getFreeBoards(): Promise<Board[]> {
+  async getFreeBoards(): Promise<Board[]> {
     return this.boardsService.getFreeBoards();
   }
 
   @Get('/shorts')
-  getShortsBoards(): Promise<Board[]> {
+  async getShortsBoards(): Promise<Board[]> {
     return this.boardsService.getShortsBoards();
   }
 
   @Get('/:id')
-  getBoardById(@Param('id') boardId: number): Promise<Board> {
+  async getBoardById(@Param('id') boardId: number): Promise<Board> {
     return this.boardsService.getBoardById(boardId);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard('jwt'))
-  createBoards(
+  async createBoards(
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
   ): Promise<Board> {
@@ -45,7 +45,7 @@ export class BoardsController {
 
   @Delete('/:id')
   @UseGuards(AuthGuard())
-  deleteBoard(
+  async deleteBoard(
     @Param('id') boardId: number,
     @GetUser() user: User,
   ): Promise<void> {
@@ -54,10 +54,15 @@ export class BoardsController {
 
   @Patch('/:id/edit')
   @UseGuards(AuthGuard('jwt'))
-  updateBoard(
+  async updateBoard(
     @Param('id') boardId: number,
     @Body() updateBoardDto: CreateBoardDto,
   ): Promise<Board> {
     return this.boardsService.updateBoard(boardId, updateBoardDto);
+  }
+
+  @Get('/rank')
+  async getRankBoard() : Promise<Board[]> {
+    return this.boardsService.getRankBoards();
   }
 }

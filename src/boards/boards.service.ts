@@ -14,36 +14,48 @@ export class BoardsService {
 
   async getAllBoards(): Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author','likes'],
-      order :{
-        id:'DESC'
-      }
-    });
-  }
-
-  async getFreeBoards() : Promise<Board[]> {
-    return this.boardRepository.find({
-      relations: ['author','likes'],
-      where: { category:"FREE" },
+      relations: ['author', 'likes'],
       order: {
-        id:'DESC'
-      }
+        id: 'DESC',
+      },
     });
   }
 
-  async getShortsBoards() : Promise<Board[]> {
+  async getRankBoards(): Promise<Board[]> {
     return this.boardRepository.find({
-      relations: ['author','likes'],
+      relations: ['author', 'likes'],
+      order: {
+        likesCount: 'DESC',
+      },
+    });
+  }
+
+  async getFreeBoards(): Promise<Board[]> {
+    return this.boardRepository.find({
+      relations: ['author', 'likes'],
+      where: { category: 'FREE' },
+      order: {
+        id: 'DESC',
+      },
+    });
+  }
+
+  async getShortsBoards(): Promise<Board[]> {
+    return this.boardRepository.find({
+      relations: ['author', 'likes'],
       where: {
-        category:"SHORTS"
+        category: 'SHORTS',
       },
       order: {
-        id: 'DESC'
-      }
-    })
+        id: 'DESC',
+      },
+    });
   }
 
-  async createBoard(createBoardDto: CreateBoardDto , user:User): Promise<Board> {
+  async createBoard(
+    createBoardDto: CreateBoardDto,
+    user: User,
+  ): Promise<Board> {
     const { title, detail, category } = createBoardDto;
     const createdAt = new Date().toLocaleDateString();
     const newContent = this.boardRepository.create({
@@ -63,36 +75,37 @@ export class BoardsService {
     });
     if (!res) {
       throw new NotFoundException(
-        `There's no content has ${boardId} for its id`
+        `There's no content has ${boardId} for its id`,
       );
     }
     return res;
   }
 
-
-  async deleteBoard(boardId: number , user:User): Promise<void> {
+  async deleteBoard(boardId: number, user: User): Promise<void> {
     const res = await this.boardRepository.findOne({
       where: { id: boardId },
       relations: ['author'],
     });
-    if(!res) {
+    if (!res) {
       throw new NotFoundException(
         `There's no content has ${boardId} for its id`,
       );
     }
-    if(res.author.id != user.id) {
+    if (res.author.id != user.id) {
       throw new UnauthorizedException("you're not a author");
     }
 
     await this.boardRepository.remove(res);
-    
   }
 
-  async updateBoard(boardId: number, updateBoardDto:CreateBoardDto): Promise<Board> {
-    const target = await this.getBoardById(boardId); 
-    target.detail = updateBoardDto.detail; 
+  async updateBoard(
+    boardId: number,
+    updateBoardDto: CreateBoardDto,
+  ): Promise<Board> {
+    const target = await this.getBoardById(boardId);
+    target.detail = updateBoardDto.detail;
     target.title = updateBoardDto.title;
-    const res = await this.boardRepository.save(target); 
-    return res; 
+    const res = await this.boardRepository.save(target);
+    return res;
   }
 }
