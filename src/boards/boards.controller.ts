@@ -28,6 +28,11 @@ export class BoardsController {
     return this.boardsService.getShortsBoards();
   }
 
+  @Get('/rank')
+  async getRankBoard(): Promise<Board[]> {
+    return this.boardsService.getRankBoards();
+  }
+
   @Get('/:id')
   async getBoardById(@Param('id') boardId: number): Promise<Board> {
     return this.boardsService.getBoardById(boardId);
@@ -59,10 +64,5 @@ export class BoardsController {
     @Body() updateBoardDto: CreateBoardDto,
   ): Promise<Board> {
     return this.boardsService.updateBoard(boardId, updateBoardDto);
-  }
-
-  @Get('/rank')
-  async getRankBoard() : Promise<Board[]> {
-    return this.boardsService.getRankBoards();
   }
 }
