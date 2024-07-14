@@ -20,7 +20,7 @@ export class Board extends BaseEntity {
   createdAt: string;
 
   @Column()
-  category: 'FREE' | 'SHORTS';
+  category: 'FREE' | 'SHORTS' | 'CODING';
 
   @OneToMany(() => Like, (like) => like.board)
   likes: Like[];

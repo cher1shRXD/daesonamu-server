@@ -28,6 +28,11 @@ export class BoardsController {
     return this.boardsService.getShortsBoards();
   }
 
+  @Get('/coding')
+  async getCodingBoards(): Promise<Board[]> {
+    return this.boardsService.getCodingBoards();
+  }
+
   @Get('/rank')
   async getRankBoard(): Promise<Board[]> {
     return this.boardsService.getRankBoards();

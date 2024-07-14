@@ -52,6 +52,18 @@ export class BoardsService {
     });
   }
 
+  async getCodingBoards(): Promise<Board[]> {
+    return this.boardRepository.find({
+      relations: ['author', 'likes'],
+      where: {
+        category: 'CODING',
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+  }
+
   async createBoard(
     createBoardDto: CreateBoardDto,
     user: User,

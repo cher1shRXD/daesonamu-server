@@ -12,5 +12,5 @@ export class CreateBoardDto {
 
   @IsNotEmpty()
   @ApiProperty({ type: String, description: 'category' })
-  category: "FREE" | "SHORTS";
+  category: "FREE" | "SHORTS" | "CODING";
 }
