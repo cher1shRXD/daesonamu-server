@@ -16,7 +16,7 @@ import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 interface JwtConfig {
   secret: string;
-  expiration: number;
+  expiration: string;
   refreshSecret: string;
   refreshExpiration: number;
 }
@@ -34,7 +34,7 @@ export class AuthService {
 
   private createRefreshToken(payload: { studentId: string }): string {
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: jwtConfig.refreshExpiration.toString(),
+      expiresIn: jwtConfig.refreshExpiration,
       secret: jwtConfig.refreshSecret,
     });
     this.redisClient.set(
